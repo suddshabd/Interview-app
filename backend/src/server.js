@@ -1,20 +1,33 @@
-import express from "express"
-import path from "path"
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import { ENV } from "./lib/env.js";
-
 
 const app = express();
 
-const __dirname = path.resolve();
+// Correct __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// Health check
 app.get("/health", (req, res) => {
-    res.status(200).json({ msg: "success api is running good " })
-})
-//make our app ready for production
+    res.status(200).json({ msg: "API is running properly" });
+});
+
+// Serve frontend in production
 if (ENV.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../frontend/dist")));
-    app.get("/{*any}", (req, res) => {
-        res.sendFile(path.join(__dirname, "../frontend/dist/index.html"))
+    const frontendPath = path.join(__dirname, "../frontend/dist");
+
+    app.use(express.static(frontendPath));
+
+    // Correct wildcard route
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(frontendPath, "index.html"));
     });
 }
-app.listen(3000, () => console.log(`Server is running on port ${ENV.PORT}`))
+
+
+
+app.listen(
+    console.log(`Server running on port ${ENV.PORT}`)
+);
