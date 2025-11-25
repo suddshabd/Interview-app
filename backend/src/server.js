@@ -1,28 +1,8 @@
-// import express from "express"
-// import path from "path"
-// import { ENV } from "./lib/env.js";
-
-
-// const app = express();
-
-// const __dirname = path.resolve();
-
-// app.get("/health", (req, res) => {
-//     res.status(200).json({ msg: "success api is running good " })
-// })
-// //make our app ready for production
-// if (ENV.NODE_ENV === "production") {
-//     app.use(express.static(path.join(__dirname, "../frontend/dist")));
-//     app.get("/{*any}", (req, res) => {
-//         res.sendFile(path.join(__dirname, "../frontend/dist/index.html"))
-//     });
-// }
-// app.listen(3000, () => console.log(`Server is running on port ${ENV.PORT}`))
-// backend/src/server.js
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ENV } from "./lib/env.js";
+import { connectDB } from "./lib/db.js";
 
 const app = express();
 
@@ -50,7 +30,18 @@ if (ENV.NODE_ENV === "production") {
 }
 
 // ---- Start server ----
-const PORT = ENV.PORT || process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+
+
+
+const startServer = async () => {
+    try {
+        await connectDB();
+        app.listen(ENV.PORT, () => {
+            console.log("Server is running on port", ENV.PORT);
+
+        });
+    } catch (error) {
+        console.error("Error starting the server ❌", error)
+    }
+}
+startServer()
