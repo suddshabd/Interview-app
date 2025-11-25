@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { ENV } from "./lib/env.js";
 import { connectDB } from "./lib/db.js";
+import { error } from "console";
 
 const app = express();
 
@@ -35,6 +36,9 @@ if (ENV.NODE_ENV === "production") {
 
 const startServer = async () => {
     try {
+        if (!ENV.DB_URL) {
+            throw new error("DB_URL is not defined in environment variables")
+        }
         await connectDB();
         app.listen(ENV.PORT, () => {
             console.log("Server is running on port", ENV.PORT);
