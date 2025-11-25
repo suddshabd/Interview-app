@@ -1,4 +1,4 @@
-import { Inngest } from Inngest
+import { Inngest } from "Inngest"
 import { connectDB } from "./db.js"
 import User from "../models/User.js"
 
