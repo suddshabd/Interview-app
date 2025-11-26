@@ -8,7 +8,7 @@ export async function createSession(req, res) {
         const userId = req.user._id
         const clerkId = req.user.clerkId
         if (!problem || !difficulty) {
-            return res.status(400).json({ meassage: "Problem and difficulty are required" })
+            return res.status(400).json({ message: "Problem and difficulty are required" })
         }
         //generate a unique call id for stream video
         const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
@@ -92,7 +92,9 @@ export async function joinSession(req, res) {
         if (session.status !== "active") {
             return res.status(400).json({ message: "Cannot join a completed session" })
         }
-
+        if (session.host.toString() === userId.toString()) {
+            return res.status(400).json({ message: "Host cannot join their own session as participant" });
+        }
         //check if session is already full
         if (session.participant) return res.status(404).json({ message: "Session is full" })
 
@@ -105,8 +107,8 @@ export async function joinSession(req, res) {
 
         res.status(200).json({ session })
     } catch (error) {
-        console.log("Error in joinSession controller:", error.meassage);
-        res.status(500), json({ message: "Internal Server Error" })
+        console.log("Error in joinSession controller:", error.message);
+        return res.status(500).json({ message: "Internal Server Error" })
     }
 }
 export async function endSession(req, res) {
