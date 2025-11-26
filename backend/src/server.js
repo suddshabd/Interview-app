@@ -28,7 +28,7 @@ app.use("/api/chat", chatRoutes)
 
 // Health check
 app.get("/health", (req, res) => {
-    req.auth;
+    req.auth();
     res.status(200).json({ msg: "success api is running good" });
 });
 
